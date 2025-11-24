@@ -1,0 +1,18 @@
+
+@import "tailwindcss";
+
+@keyframes upDownMovement {
+  0% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px); /* Move up */
+  }
+  100% {
+    transform: translateY(0); /* Back to original position */
+  }
+}
+
+.moving-button {
+  animation: upDownMovement 1s ease-in-out infinite;
+}
