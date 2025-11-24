@@ -27,6 +27,7 @@ const Lobby = () => {
   }, []);
 
   useEffect(() => {
+    if (!socket) return;
     socket.on("you-joined-room", handleJoinRoom);
 
     return () => {

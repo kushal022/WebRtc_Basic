@@ -246,7 +246,8 @@ const Room = () => {
   const handleNegoFinal = useCallback(async ({ from, ans }) => {
     console.log(`---- nego:final ----`);
     await peer.setLocalDescription(ans);
-  }, []);
+    sendStream();
+  }, [sendStream]);
 
   useEffect(() => {
     peer.peer.addEventListener("negotiationneeded", handleNegoNeeded);
@@ -267,6 +268,10 @@ const Room = () => {
     trackHandler();
     // setTimeout(() => sendStream(), 3000);
   }, []);
+  useEffect(() => {
+    setTimeout(() => sendStream(), 3000);
+  }, [myStream, sendStream]);
+
 
   useEffect(() => {
     socket.on("user:joined", handleUserJoinRoom);
