@@ -35,20 +35,24 @@ const Lobby = () => {
     };
   }, [socket]);
   return (
-    <div className="min-h-screen w-full bg-gray-900 text-white flex gap-2 flex-col items-center justify-center relative overflow-hidden font-inter ">
-      <div className="bg-gray-800 p-10 flex items-center justify-center flex-col gap-2">
-        <h1 className="text-amber-700 font-bold text-2xl">Lobby</h1>
-        <form onSubmit={handleSubmitForm}>
+    <div className="min-h-screen w-full bg-gray-900 text-white flex flex-col items-center justify-center px-4 py-10 font-inter">
+      <div className="bg-gray-800 max-w-md w-full p-10 rounded-3xl shadow-xl flex flex-col items-center gap-6">
+        <h1 className="text-amber-500 font-bold text-4xl select-none">Lobby</h1>
+        <form onSubmit={handleSubmitForm} className="w-full flex flex-col gap-6">
           <input
             type="text"
             id="room"
             value={roomId}
             onChange={(e) => setRoomId(e.target.value)}
             placeholder="Enter room number.."
-            className="border-b border-gray-500 px-1 py-0.5 text-center focus:outline-0 "
+            className="w-full text-center rounded-lg border border-gray-600 bg-gray-900 px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-amber-500 transition"
+            aria-label="Room number"
+            required
           />
-          <br />
-          <button className="text-center w-full mt-5 bg-gray-900 p-2 rounded cursor-pointer hover:bg-amber-700 transition-all duration-300">
+          <button
+            type="submit"
+            className="w-full bg-amber-600 hover:bg-amber-700 focus:bg-amber-700 focus:outline-none focus:ring-4 focus:ring-amber-400 text-white font-semibold py-3 rounded-lg shadow-md transition"
+          >
             Join
           </button>
         </form>

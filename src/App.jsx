@@ -5,6 +5,7 @@ import Room from "./screens/Room";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import { useAuth } from "./context/AuthProvider";
+import Home from "./pages/Home";
 
 const App = () => {
   const { token, logout, user } = useAuth();
@@ -14,8 +15,8 @@ const App = () => {
       <div className="px-4 min-h-5 py-1 flex justify-end">
         {token && (
           <div className="flex gap-4 justify-end ">
-            <div className="text-amber-700 font-bold italic ">@{user}</div>
-            <button className="bg-amber-700 px-3 py-1 rounded" onClick={logout}>
+            <div className="text-amber-500 font-bold italic ">@{user}</div>
+            <button className="bg-amber-500 px-3 py-1 rounded" onClick={logout}>
               Logout
             </button>
           </div>
@@ -25,7 +26,7 @@ const App = () => {
       <Routes>
         <Route
           path="/"
-          element={token ? <Navigate to="/lobby" /> : <Navigate to="/login" />}
+          element={<Home />}
         />
         <Route
           path="/login"

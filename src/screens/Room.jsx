@@ -359,38 +359,44 @@ const Room = () => {
     }
   };
 
-  return (
-    <div className="min-h-screen w-full bg-gray-900 text-white flex flex-col items-center justify-start relative overflow-hidden font-inter">
+return (
+    <div className="min-h-screen w-full bg-gray-900 text-white flex flex-col items-center justify-start relative overflow-hidden font-inter px-4 py-6 md:py-12">
       {/* --- Transient Status Message --- */}
       {statusMessage && (
-        <div className="absolute top-20 left-1/2 transform -translate-x-1/2 z-30 p-2 px-4 bg-indigo-600/90 text-white rounded-full text-sm font-medium shadow-lg transition-all duration-300">
+        <div
+          className="fixed top-16 left-1/2 transform -translate-x-1/2 z-30 px-6 py-2 bg-indigo-600/95 text-white rounded-full text-sm font-medium shadow-lg animate-fadeInOut max-w-[90vw] text-center"
+          role="alert"
+          aria-live="assertive"
+        >
           {statusMessage}
         </div>
       )}
+
       {/* --- Head --- */}
-      <div className="flex flex-col items-center justify-center">
-        <h2 className="text-amber-700 font-bold text-2xl">ROOM: {roomId}</h2>
-        <h3 className="mt-2">
+      <header className="flex flex-col items-center">
+        <h2 className="text-amber-500 font-bold text-3xl sm:text-4xl mb-1 select-none">
+          ROOM: {roomId}
+        </h2>
+        <h3 className="mt-1 text-center text-sm sm:text-base max-w-xs sm:max-w-md px-4 break-words">
           {remoteSocketId ? (
-            <p>
-              <span className="text-amber-700 font-semibold italic">
-                @{receiver ? receiver.username : caller}
-              </span>{" "}
-              is connected with you{" "}
-            </p>
+            <span className="text-amber-500 font-semibold italic">
+              @{receiver ? receiver.username : "Caller"}
+            </span>
           ) : (
-            <p className="text-sm">You will be connected soon..please wait!!</p>
+            <span className="text-gray-400 italic">
+              You will be connected soon... please wait!
+            </span>
           )}
         </h3>
-      </div>
+      </header>
 
-      {/* ---- CAll ---- */}
+      {/* ---- Call Button (Idle) ---- */}
       {callStatus === "Idle" && (
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2  max-w-sm z-10 p-6 bg-black/50 backdrop-blur-sm rounded-2xl shadow-2xl space-y-4">
+        <div className="fixed top-1/2 left-1/2 max-w-sm z-20 p-6 bg-black/60 backdrop-blur-md rounded-3xl shadow-2xl space-y-6 transform -translate-x-1/2 -translate-y-1/2">
           <CallButton
             icon={PhoneCall}
             onClick={() => initiateCall()}
-            color="bg-green-600"
+            color="bg-green-600 hover:bg-green-700 focus:ring-green-400"
             label="Call"
             disabled={!remoteSocketId}
           />
@@ -399,159 +405,117 @@ const Room = () => {
 
       {/* --- Error Alert --- */}
       {callError && (
-        <div className="absolute bottom-40 left-1/2 transform -translate-x-1/2 z-30 flex items-center p-3 bg-red-600/90 text-white rounded-xl text-sm font-medium shadow-2xl">
-          <AlertTriangle className="w-5 h-5 mr-2" />
+        <div
+          className="fixed bottom-40 left-1/2 transform -translate-x-1/2 z-30 flex items-center px-4 py-3 bg-red-700/95 text-white rounded-lg text-sm font-semibold shadow-xl animate-fadeInOut"
+          role="alert"
+          aria-live="assertive"
+        >
+          <AlertTriangle className="w-5 h-5 mr-2" aria-hidden="true" />
           {callError}
         </div>
       )}
 
       {/* INCOMING CALL BANNER */}
       {remoteSocketId && callStatus === "Ringing" && (
-        <div className="absolute top-32 bg-green-600 text-white px-6 py-3 rounded-full text-lg font-bold animate-bounce">
-          @{caller} is calling…
+        <div className="fixed top-32 bg-green-600 text-white px-8 py-3 rounded-full text-lg font-bold shadow-lg animate-bounce z-30 select-none">
+          @{caller} is calling...
         </div>
       )}
 
+      {/* Local Stream Preview */}
       {myStream && (
-        <>
-          <div className="absolute top-4 right-4 w-28 h-40 sm:w-36 sm:h-48 bg-gray-700 rounded-xl overflow-hidden shadow-2xl z-200 border-2 border-white/50">
-            <video
-              ref={(video) => {
-                if (video) {
-                  video.srcObject = myStream;
-                }
-              }}
-              autoPlay
-              playsInline
-              muted
-              className={`w-full h-full object-cover ${
-                isFrontCamera ? "" : "transform scale-x-[-1]"
-              }`}
-            />
-          </div>
-        </>
-      )}
-      {remoteStream ? (
-        <>
-          {/* --- Remote/Main Video Display --- */}
-          {/* <p>Remote Strem</p> */}
-          <div className="w-100 lg:h-80  md:mt-10 lg:mt-5 flex items-center justify-center ">
-            <video
-              ref={(video) => {
-                if (video) {
-                  video.srcObject = remoteStream;
-                }
-              }}
-              // ref={remoteVideoRef}
-              autoPlay
-              muted
-              height={200}
-              width={300}
-              className="w-full h-full  bg-gray-700 rounded-xl overflow-hidden shadow-2xl z-20 border-2 border-white/50"
-              //  className={`w-full h-full object-cover transition-opacity duration-700
-              // ${callStatus === 'InCall' ? 'opacity-100' : 'opacity-10'}`}
-            />
-
-            {/* Fallback/Status Background */}
-            {/* {callStatus !== "InCall" && (
-              <div className="absolute inset-0 flex flex-col items-center justify-center bg-gray-900/90 text-white">
-                <Video className="w-16 h-16 mb-4 text-indigo-400 opacity-80" />
-                <h1 className="text-3xl font-light">ANO Caller</h1>
-                {remoteId && (
-                  <p className="mt-2 text-xl font-semibold">
-                    {callStatus === "Ringing"
-                      ? "Incoming Call..."
-                      : remoteSocketId.substring(0, 8)}
-                  </p>
-                )}
-
-                {callStatus === "Connecting" && (
-                  <Loader className="w-8 h-8 mt-4 animate-spin text-indigo-400" />
-                )}
-              </div>
-            )} */}
-          </div>
-        </>
-      ) : (
-        <div className="flex items-center justify-center h-full text-gray-500">
-          <Video className="w-12 h-12 opacity-40" />
+        <div className="fixed top-4 right-4 w-28 h-40 sm:w-36 sm:h-48 bg-gray-800 rounded-xl overflow-hidden shadow-2xl z-40 border-2 border-white/50">
+          <video
+            ref={(video) => {
+              if (video) {
+                video.srcObject = myStream;
+              }
+            }}
+            autoPlay
+            playsInline
+            // muted
+            className={`w-full h-full object-cover ${isFrontCamera ? "" : "transform scale-x-[-1]"}`}
+          />
         </div>
       )}
 
-      {/* --- Floating Control Bar (In Call / Ringing) --- */}
+      {/* Remote Stream Main Display */}
+      <main className="flex-grow flex items-center justify-center w-full max-w-5xl mt-10 mb-24 px-2 sm:px-0">
+        {remoteStream ? (
+          <video
+            ref={(video) => {
+              if (video) {
+                video.srcObject = remoteStream;
+              }
+            }}
+            autoPlay
+            // muted
+            className="w-full max-w-full max-h-[75vh] rounded-xl shadow-2xl border-2 border-white/60 object-cover transition-opacity duration-700"
+            playsInline
+          />
+        ) : (
+          <div className="flex flex-col items-center justify-center text-gray-600 select-none">
+            <Video className="w-16 h-16 opacity-30 mb-4" />
+            <p className="text-lg font-light">Waiting for remote user...</p>
+          </div>
+        )}
+      </main>
+
+      {/* Floating Control Bar */}
       {(callStatus === "InCall" ||
         callStatus === "Ringing" ||
         callStatus === "Connecting") && (
-        <div className="absolute bottom-6 w-full px-4 z-20">
-          <div className="flex justify-center space-x-4 p-4 bg-black/50 backdrop-blur-md rounded-full shadow-2xl">
-            {/* 1. Mic Toggle */}
+        <nav
+          className="fixed bottom-6 inset-x-4 z-50 flex justify-center space-x-6 p-4 bg-black/60 backdrop-blur-md rounded-full shadow-2xl"
+          aria-label="Call controls"
+        >
+          <CallButton
+            icon={Mic}
+            onClick={toggleMic}
+            color={isMicMuted ? "bg-red-500" : "bg-indigo-600"}
+            active={!isMicMuted}
+            label={isMicMuted ? "Unmute microphone" : "Mute microphone"}
+          />
+          <CallButton
+            icon={Video}
+            onClick={toggleVideo}
+            color={isVideoDisabled ? "bg-red-500" : "bg-indigo-600"}
+            active={!isVideoDisabled}
+            label={isVideoDisabled ? "Enable video" : "Disable video"}
+          />
+          <CallButton
+            icon={RotateCw}
+            onClick={rotateCamera}
+            color="bg-gray-700"
+            active={true}
+            label="Rotate Camera"
+            disabled={isVideoDisabled}
+          />
+          <CallButton
+            icon={Volume2}
+            color="bg-gray-700"
+            active={true}
+            label="Speaker"
+          />
+          {callStatus === "Ringing" ? (
             <CallButton
-              icon={Mic}
-              onClick={toggleMic}
-              color={isMicMuted ? "bg-red-500" : "bg-indigo-600"}
-              active={!isMicMuted}
-              label={isMicMuted ? "Unmute" : "Mute"}
-            />
-
-            {/* 2. Video Toggle */}
-            <CallButton
-              icon={Video}
-              onClick={toggleVideo}
-              color={isVideoDisabled ? "bg-red-500" : "bg-indigo-600"}
-              active={!isVideoDisabled}
-              label={isVideoDisabled ? "Enable Video" : "Disable Video"}
-            />
-
-            {/* 3. Camera Rotate */}
-            <CallButton
-              icon={RotateCw}
-              onClick={rotateCamera}
-              color={"bg-gray-700"}
-              active={true}
-              label={"Rotate Camera"}
-              disabled={isVideoDisabled}
-            />
-
-            {/* 4. Speaker/Audio Toggle (Mock) */}
-            <CallButton
-              icon={Volume2}
-              // onClick={() => showStatusMessage("Speaker toggle mock")}
-              color={"bg-gray-700"}
-              active={true}
-              label={"Speaker"}
-            />
-
-            <CallButton
-              icon={Video}
-              onClick={() => sendStream()}
+              icon={UserCheck}
+              onClick={handleAnswer}
               color="bg-green-600"
-              label="Answer"
+              label="Answer Call"
             />
-
-            {/* 5. Answer/Hangup */}
-            {callStatus === "Ringing" ? (
-              <div className="moving-button">
-                <CallButton
-                  icon={UserCheck}
-                  onClick={handleAnswer}
-                  color="bg-green-600"
-                  label="Answer"
-                />
-              </div>
-            ) : (
-              <CallButton
-                icon={X}
-                onClick={hangUpCall}
-                color="bg-red-700"
-                label="End Call"
-              />
-            )}
-          </div>
-        </div>
+          ) : (
+            <CallButton
+              icon={X}
+              onClick={hangUpCall}
+              color="bg-red-700"
+              label="End Call"
+            />
+          )}
+        </nav>
       )}
 
-      {/* Technical Disclaimer */}
-      <footer className="absolute bottom-0 w-full text-center text-gray-400 text-xs py-2 bg-black/30">
+      <footer className="absolute bottom-0 w-full text-center text-gray-400 text-xs py-2 bg-black/30 select-none">
         Always Free Calling ❤️
       </footer>
     </div>
